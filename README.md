@@ -22,8 +22,8 @@ This is a simple example of calling the Google Cloud Storage APIs in Go.
 - Bucket name (this bucket will be created and deleted for you - it
       should not yet exist).
 - Project ID.
-- Client ID (in the "API Access" tab of https://code.google.com/apis/console/)
-- Client secret (in the "API Access" tab of https://code.google.com/apis/console/)
+- Client ID (in the "API Access" tab of https://code.google.com/apis/console/).
+- Client secret (in the "API Access" tab of https://code.google.com/apis/console/).
 
 ## Running the Sample Application
 1) Run the application:
