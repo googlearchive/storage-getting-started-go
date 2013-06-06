@@ -4,7 +4,7 @@
 This is a simple example of calling the Google Cloud Storage APIs in Go.
 
 ## Setup Authentication
-1) Visit https://code.google.com/apis/console/ to register your application.
+1) Visit http://cloud.google.com/console to register your application.
 
 2) From the "Project Home" screen, activate access to "Google Cloud Storage API":
 - Click on "API Access" in the left column.
@@ -23,8 +23,8 @@ This is a simple example of calling the Google Cloud Storage APIs in Go.
 - Bucket name (this bucket will be created and deleted for you - it
       should not yet exist).
 - Project ID.
-- Client ID (in the "API Access" tab of https://code.google.com/apis/console/).
-- Client secret (in the "API Access" tab of https://code.google.com/apis/console/).
+- Client ID (in the "API Access" tab of http://cloud.google.com/console).
+- Client secret (in the "API Access" tab of http://cloud.google.com/console).
 
 ## Running the Sample Application
 1) Run the application:
