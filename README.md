@@ -15,7 +15,8 @@ This is a simple example of calling the Google Cloud Storage APIs in Go.
 - Click "Create client ID".
 
 ## Prerequisites
-1) Run the following command:
+1) Run the following commands:
+* $ go get code.google.com/p/goauth2/oauth
 * $ go get code.google.com/p/google-api-go-client/storage/v1beta2
 
 2) In storage-sample.go, fill in your:
