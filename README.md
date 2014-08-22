@@ -31,3 +31,6 @@ This is a simple example of calling the Google Cloud Storage APIs in Go.
 ## Running the Sample Application
 1) Run the application (on the first run, you will be prompted to go through the OAuth2 flow):
   * $ go run storage-sample.go
+
+## More Information
+See [https://developers.google.com/storage/docs/json_api/v1/json-api-go-samples](https://developers.google.com/storage/docs/json_api/v1/json-api-go-samples)
