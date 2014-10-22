@@ -18,7 +18,7 @@ This is a simple example of calling the Google Cloud Storage APIs in Go.
 ## Prerequisites
 1) Run the following commands:
 * $ go get code.google.com/p/goauth2/oauth
-* $ go get code.google.com/p/google-api-go-client/storage/v1beta2
+* $ go get code.google.com/p/google-api-go-client/storage/v1
 
 2) In storage-sample.go, fill in your:
 - Bucket name (this bucket will be created and deleted for you - it

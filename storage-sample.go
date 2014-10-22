@@ -26,7 +26,7 @@ import (
 	"os"
 
 	"code.google.com/p/goauth2/oauth"
-	"code.google.com/p/google-api-go-client/storage/v1beta2"
+	"code.google.com/p/google-api-go-client/storage/v1"
 )
 
 const (
