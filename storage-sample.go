@@ -22,48 +22,28 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
-	"code.google.com/p/goauth2/oauth"
-	"code.google.com/p/google-api-go-client/storage/v1"
+	"golang.org/x/net/context"
+	"golang.org/x/oauth2/google"
+	storage "google.golang.org/api/storage/v1"
 )
 
 const (
 	// Change these variable to match your personal information.
-	bucketName   = "YOUR_BUCKET_NAME"
-	projectID    = "YOUR_PROJECT_ID"
-	clientId     = "YOUR_CLIENT_ID"
-	clientSecret = "YOUR_CLIENT_SECRET"
+	bucketName = "YOUR_BUCKET_NAME"
+	projectID  = "YOUR_PROJECT_ID"
 
 	fileName   = "/usr/share/dict/words" // The name of the local file to upload.
 	objectName = "english-dictionary"    // This can be changed to any valid object name.
 
 	// For the basic sample, these variables need not be changed.
 	scope      = storage.DevstorageFull_controlScope
-	authURL    = "https://accounts.google.com/o/oauth2/auth"
-	tokenURL   = "https://accounts.google.com/o/oauth2/token"
 	entityName = "allUsers"
-	redirectURL = "urn:ietf:wg:oauth:2.0:oob"
 )
 
 var (
-	cacheFile = flag.String("cache", "cache.json", "Token cache file")
-	code      = flag.String("code", "", "Authorization Code")
-
-	// For additional help with OAuth2 setup,
-	// see http://goo.gl/cJ2OC and http://goo.gl/Y0os2
-
-	// Set up a configuration boilerplate.
-	config = &oauth.Config{
-		ClientId:     clientId,
-		ClientSecret: clientSecret,
-		Scope:        scope,
-		AuthURL:      authURL,
-		TokenURL:     tokenURL,
-		TokenCache:   oauth.CacheFile(*cacheFile),
-		RedirectURL:  redirectURL,
-	}
+	jsonFile = flag.String("creds", "", "A path to your JSON key file for your service account downloaded from Google Developer Console, not needed if you run it on Compute Engine instances.")
 )
 
 func fatalf(service *storage.Service, errorMessage string, args ...interface{}) {
@@ -72,59 +52,39 @@ func fatalf(service *storage.Service, errorMessage string, args ...interface{}) 
 }
 
 func restoreOriginalState(service *storage.Service) bool {
-	succeeded := true
-
 	// Delete an object from a bucket.
-	if err := service.Objects.Delete(bucketName, objectName).Do(); err == nil {
-		fmt.Printf("Successfully deleted %s/%s during cleanup.\n\n", bucketName, objectName)
-	} else {
+	if err := service.Objects.Delete(bucketName, objectName).Do(); err != nil {
 		// If the object exists but wasn't deleted, the bucket deletion will also fail.
 		fmt.Printf("Could not delete object during cleanup: %v\n\n", err)
+	} else {
+		fmt.Printf("Successfully deleted %s/%s during cleanup.\n\n", bucketName, objectName)
 	}
 
 	// Delete a bucket in the project
-	if err := service.Buckets.Delete(bucketName).Do(); err == nil {
-		fmt.Printf("Successfully deleted bucket %s during cleanup.\n\n", bucketName)
-	} else {
-		succeeded = false
+	if err := service.Buckets.Delete(bucketName).Do(); err != nil {
 		fmt.Printf("Could not delete bucket during cleanup: %v\n\n", err)
+		fmt.Println("WARNING: Final cleanup attempt failed. Original state could not be restored.\n")
+		return false
 	}
 
-	if !succeeded {
-		fmt.Println("WARNING: Final cleanup attempt failed. Original state could not be restored.\n")
-	}
-	return succeeded
+	fmt.Printf("Successfully deleted bucket %s during cleanup.\n\n", bucketName)
+	return true
 }
 
 func main() {
 	flag.Parse()
-
-	// Set up a transport using the config
-	transport := &oauth.Transport{
-		Config:    config,
-		Transport: http.DefaultTransport,
+	if *jsonFile != "" {
+		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", *jsonFile)
 	}
 
-	token, err := config.TokenCache.Token()
+	client, err := google.DefaultClient(context.Background(), scope)
 	if err != nil {
-		if *code == "" {
-			url := config.AuthCodeURL("")
-			fmt.Println("Visit URL to get a code then run again with -code=YOUR_CODE")
-			fmt.Println(url)
-			os.Exit(1)
-		}
-
-		// Exchange auth code for access token
-		token, err = transport.Exchange(*code)
-		if err != nil {
-			log.Fatal("Exchange: ", err)
-		}
-		fmt.Printf("Token is cached in %v\n", config.TokenCache)
+		log.Fatalf("Unable to get default client: %v", err)
 	}
-	transport.Token = token
-
-	httpClient := transport.Client()
-	service, err := storage.New(httpClient)
+	service, err := storage.New(client)
+	if err != nil {
+		log.Fatalf("Unable to create storage service: %v", err)
+	}
 
 	// If the bucket already exists and the user has access, warn the user, but don't try to create it.
 	if _, err := service.Buckets.Get(bucketName).Do(); err == nil {
@@ -201,5 +161,4 @@ func main() {
 	if !restoreOriginalState(service) {
 		os.Exit(1)
 	}
-
 }
