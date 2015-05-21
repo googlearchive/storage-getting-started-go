@@ -19,7 +19,7 @@ This is a simple example of calling the Google Cloud Storage APIs in Go.
 1) Run the following commands:
 * $ go get -u golang.org/x/net/context
 * $ go get -u golang.org/x/oauth2/google
-* $ go get -u google.golang.org/api/storage
+* $ go get -u google.golang.org/api/storage/...
 
 
 2) In storage-sample.go, fill in your:
