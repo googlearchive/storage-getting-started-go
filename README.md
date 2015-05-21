@@ -3,31 +3,33 @@
 ## Description
 This is a simple example of calling the Google Cloud Storage APIs in Go.
 
-## Setup Authentication
-1) Visit http://cloud.google.com/console to register your application.
+## Setup Google Cloud SDK and Authentication
 
-2) In order to create (or find) the credentials for your application:
-- Visit https://cloud.google.com/console
-- Select a project that has Google Cloud Storage enabled (create such a project).
-- From the project's page, under "APIs & auth", click on "Credentials".
-- Under the "OAuth" secion, click on "Create new Client ID".
-- Select "Service Account" and make sure that "JSON Key" is selected.
-- Click on "Create Client ID" and download the JSON file.
+Install the [Google Cloud SDK](https://cloud.google.com/sdk):
 
+```
+curl https://sdk.cloud.google.com | bash
+```
+
+Once installed, authenicate with your Google account:
+
+```
+gcloud auth login
+```
 
 ## Prerequisites
-1) Run the following commands:
-* $ go get -u golang.org/x/net/context
-* $ go get -u golang.org/x/oauth2/google
-* $ go get -u google.golang.org/api/storage/...
+Install dependencies with ``go get``.
 
-
-2) In storage-sample.go, fill in your:
-- Bucket name (this bucket will be created and deleted for you - it
-      should not yet exist).
-- Project ID.
-
+```
+$ go get -u golang.org/x/net/context
+$ go get -u golang.org/x/oauth2/google
+$ go get -u google.golang.org/api/storage/...
+```
 
 ## Running the Sample Application
-1) Run the application (on the first run, you will be prompted to go through the OAuth2 flow):
-  * $ go run storage-sample.go -creds <your-service-account-info>.json
+
+You will need a project with billing set up and the Cloud Storage API enabled. You do not need an existing bucket as the sample will create one for you. You will also need a local file to upload.
+
+```
+$ go run storage-sample.go --project=<your-project-id> --bucket=<new-bucket-name> --file=<path-to-local-file-to-upload>
+```
