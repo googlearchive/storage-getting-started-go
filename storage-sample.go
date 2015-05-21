@@ -38,7 +38,7 @@ const (
 	objectName = "english-dictionary"    // This can be changed to any valid object name.
 
 	// For the basic sample, these variables need not be changed.
-	scope      = storage.DevstorageFull_controlScope
+	scope      = storage.DevstorageFullControlScope
 	entityName = "allUsers"
 )
 
