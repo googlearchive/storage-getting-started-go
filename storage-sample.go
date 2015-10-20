@@ -125,16 +125,31 @@ func main() {
 		fatalf(service, "Objects.Insert failed: %v", err)
 	}
 
-	// List all objects in a bucket
-	if res, err := service.Objects.List(*bucketName).Do(); err == nil {
-		fmt.Printf("Objects in bucket %v:\n", *bucketName)
-		for _, object := range res.Items {
-			fmt.Println(object.Name)
+	// List all objects in a bucket using pagination
+	var objects []string
+	pageToken := ""
+	for {
+		call := service.Objects.List(*bucketName)
+		if pageToken != "" {
+			call = call.PageToken(pageToken)
 		}
-		fmt.Println()
-	} else {
-		fatalf(service, "Objects.List failed: %v", err)
+		res, err := call.Do()
+		if err != nil {
+			fatalf(service, "Objects.List failed: %v", err)
+		}
+		for _, object := range res.Items {
+			objects = append(objects, object.Name)
+		}
+		if pageToken = res.NextPageToken; pageToken == "" {
+			break
+		}
 	}
+
+	fmt.Printf("Objects in bucket %v:\n", *bucketName)
+	for _, object := range objects {
+		fmt.Println(object)
+	}
+	fmt.Println()
 
 	// Get an object from a bucket.
 	if res, err := service.Objects.Get(*bucketName, objectName).Do(); err == nil {
